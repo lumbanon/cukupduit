@@ -5,10 +5,12 @@
 A financial freedom and retirement simulator built for Malaysian Ringgit. Explore how savings, investment accounts, inflation, retirement spending, children and inheritance change the earliest retirement age your plan can support.
 
 - Repository: [lumbanon/cukupduit](https://github.com/lumbanon/cukupduit)
-- Intended production URL: [lumbanon.github.io/cukupduit](https://lumbanon.github.io/cukupduit/)
+- Production URL: [lumbanon.github.io/cukupduit](https://lumbanon.github.io/cukupduit/)
 - Hosting: static GitHub Pages; no production backend or account required.
 
-Publication status: the application is built and validated locally. Public repository creation and GitHub Pages deployment await GitHub CLI authorization; the intended production URL has not yet been verified live.
+[![Validate and deploy CukupDuit](https://github.com/lumbanon/cukupduit/actions/workflows/deploy.yml/badge.svg)](https://github.com/lumbanon/cukupduit/actions/workflows/deploy.yml)
+
+Pushes to `main` validate the application and deploy it to GitHub Pages. See the linked workflow for the current deployment status.
 
 ## Features
 
