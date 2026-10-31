@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, BadgeCheck, Building2, CircleHelp, GraduationCap, Heart, Landmark, Plus, Sparkles, Trash2, UserRound, Wallet } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BadgeCheck, Building2, CircleHelp, Gift, GraduationCap, Heart, House, Landmark, Plus, Sparkles, Trash2, UserRound, UsersRound, Wallet } from 'lucide-react'
 import type { AccountType, Child, FinancialProfile, InvestmentAccount, Liability } from '../../types'
 import { Field, SelectField, SliderField, TextField, ToggleField } from './Field'
 
@@ -14,9 +14,9 @@ export interface PlannerProps {
 const steps = [
   { title: 'Your profile', short: 'Profile', icon: UserRound, description: 'A little about where you are today.' },
   { title: 'Assets & savings', short: 'Assets', icon: Wallet, description: 'Give your money a starting point.' },
-  { title: 'Your retirement lifestyle', short: 'Lifestyle', icon: Sparkles, description: 'Make room for the life you want to live.' },
-  { title: 'Family & children', short: 'Family', icon: Heart, description: 'Plan for the people who matter most.' },
-  { title: 'Inheritance & legacy', short: 'Legacy', icon: Landmark, description: 'Choose what you would like to leave behind.' },
+  { title: 'Your retirement lifestyle', short: 'Lifestyle', icon: House, description: 'Make room for the life you want to live.' },
+  { title: 'Family & children', short: 'Family', icon: UsersRound, description: 'Plan for the people who matter most.' },
+  { title: 'Inheritance & legacy', short: 'Legacy', icon: Gift, description: 'Choose what you would like to leave behind.' },
 ]
 
 const accountTypes: { value: AccountType; label: string }[] = [
@@ -70,8 +70,8 @@ export function Planner({ profile, onChange, mode, step, onStepChange, onResults
 
   return <section className="planner-content" aria-labelledby="planner-title">
     <nav className="planner-steps" aria-label="Planning steps"><ol className="stepper">
-      {steps.map((item, index) => <li key={item.short}><button type="button" className={`planner-step${index === activeStep ? ' active' : ''}${index < activeStep ? ' complete' : ''}`} aria-current={index === activeStep ? 'step' : undefined} onClick={() => onStepChange(index)}>
-        <span className="step-number">{index < activeStep ? <BadgeCheck size={16} /> : index + 1}</span><span>{item.short}</span>
+      {steps.map((item, index) => <li key={item.short}><button type="button" className={`planner-step${index === activeStep ? ' active' : ''}${index < activeStep ? ' complete' : ''}`} aria-label={`Step ${index + 1}: ${item.short}${index < activeStep ? ', completed' : ''}`} aria-current={index === activeStep ? 'step' : undefined} onClick={() => onStepChange(index)}>
+        <span className="step-number" aria-hidden="true">{index < activeStep ? <BadgeCheck size={16} /> : index + 1}</span><span className="step-label"><item.icon className="step-icon" size={20} aria-hidden="true" /><span>{item.short}</span></span>
       </button></li>)}
     </ol></nav>
     <div className="planner-heading planner-intro"><div><span className="eyebrow">STEP {activeStep + 1} OF 5 <span className="step-divider">/</span> {advanced ? 'ADVANCED PLAN' : 'QUICK PLAN'}</span><h2 id="planner-title">{active.title}</h2><p>{active.description}</p></div></div>

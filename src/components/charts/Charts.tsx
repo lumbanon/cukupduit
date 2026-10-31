@@ -24,13 +24,17 @@ import type {
 import { money, number } from "../../utils/format";
 
 const colors = ["#8EA66B", "#D8A2A2", "#d1b878", "#91aab0", "#b5b0c4"];
-const axis = { fontSize: 11, fill: "#65705b", fontFamily: "inherit" };
+const axis = {
+  fontSize: "var(--text-chart)",
+  fill: "#65705b",
+  fontFamily: "inherit",
+};
 const currencyTick = (v: number) => money(v, true).replace("MYR", "RM");
 const tip = {
   borderRadius: 12,
   border: "1px solid #e8e9e1",
   boxShadow: "0 8px 32px #30352d0d",
-  fontSize: 12,
+  fontSize: "var(--text-chart)",
 };
 const tooltipValue = (v: unknown) => money(Number(v));
 
@@ -107,7 +111,7 @@ export function WealthChart({
             tick={axis}
             axisLine={false}
             tickLine={false}
-            width={72}
+            width={88}
           />
           <Tooltip
             formatter={tooltipValue}
@@ -123,7 +127,7 @@ export function WealthChart({
             label={{
               value: "Financial freedom",
               position: "insideTopRight",
-              fontSize: 10,
+              fontSize: "var(--text-chart)",
               fill: "#937b71",
             }}
           />
@@ -335,7 +339,7 @@ export function CashflowChart({
           <YAxis
             tickFormatter={currencyTick}
             tick={axis}
-            width={72}
+            width={88}
             axisLine={false}
             tickLine={false}
           />
@@ -344,7 +348,10 @@ export function CashflowChart({
             labelFormatter={(v) => `Age ${v}`}
             contentStyle={tip}
           />
-          <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
+          <Legend
+            iconType="circle"
+            wrapperStyle={{ fontSize: "var(--text-chart)" }}
+          />
           <Bar
             dataKey="spending"
             name="Living expenses"
@@ -400,7 +407,7 @@ export function FamilyChart({
           <XAxis dataKey="age" tick={axis} axisLine={false} tickLine={false} />
           <YAxis
             tickFormatter={currencyTick}
-            width={72}
+            width={88}
             tick={axis}
             axisLine={false}
             tickLine={false}
@@ -410,7 +417,10 @@ export function FamilyChart({
             labelFormatter={(v) => `Your age ${v}`}
             contentStyle={tip}
           />
-          <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
+          <Legend
+            iconType="circle"
+            wrapperStyle={{ fontSize: "var(--text-chart)" }}
+          />
           <Bar
             dataKey="support"
             name="Child support"
@@ -481,14 +491,17 @@ export function ScenarioChart({
             tick={axis}
             axisLine={false}
             tickLine={false}
-            width={72}
+            width={88}
           />
           <Tooltip
             formatter={tooltipValue}
             labelFormatter={(v) => `Age ${v}`}
             contentStyle={tip}
           />
-          <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
+          <Legend
+            iconType="circle"
+            wrapperStyle={{ fontSize: "var(--text-chart)" }}
+          />
           {scenarios.map((s, i) => (
             <Line
               key={s.id}
