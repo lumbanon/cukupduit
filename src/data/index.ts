@@ -1,0 +1,1 @@
+export { defaultProfile } from './defaultProfile';
