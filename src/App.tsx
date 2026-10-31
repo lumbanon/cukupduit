@@ -31,6 +31,7 @@ import {
   X,
 } from "lucide-react";
 import { defaultProfile } from "./data/defaultProfile";
+import { scenarioAppearance, type SectionTheme } from "./data/visualTheme";
 import { findRetirement } from "./engine/retirementSearch";
 import {
   additionalSavingsForTarget,
@@ -52,10 +53,30 @@ import { downloadFile, money, number } from "./utils/format";
 
 type View = "overview" | "plan" | "scenarios" | "insights";
 const nav = [
-  { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
-  { id: "plan" as const, label: "My plan", icon: SlidersHorizontal },
-  { id: "scenarios" as const, label: "Scenarios", icon: BarChart3 },
-  { id: "insights" as const, label: "Insights", icon: Sparkles },
+  {
+    id: "overview" as const,
+    label: "Overview",
+    theme: "profile",
+    icon: LayoutDashboard,
+  },
+  {
+    id: "plan" as const,
+    label: "My plan",
+    theme: "assets",
+    icon: SlidersHorizontal,
+  },
+  {
+    id: "scenarios" as const,
+    label: "Scenarios",
+    theme: "lifestyle",
+    icon: BarChart3,
+  },
+  {
+    id: "insights" as const,
+    label: "Insights",
+    theme: "legacy",
+    icon: Sparkles,
+  },
 ];
 
 function Brand({
@@ -75,15 +96,18 @@ function Brand({
         <svg viewBox="0 0 30 32" fill="none" aria-hidden="true">
           <path
             d="M15 27V13"
-            stroke="#7b9460"
+            stroke="var(--sage-strong)"
             strokeWidth="2"
             strokeLinecap="round"
           />
-          <path d="M15 20C4 22 3 14 4 8c8-1 13 3 11 12Z" fill="#8EA66B" />
-          <path d="M15 14C13 5 20 2 27 3c1 8-3 13-12 11Z" fill="#b3c399" />
+          <path d="M15 20C4 22 3 14 4 8c8-1 13 3 11 12Z" fill="var(--sage)" />
+          <path
+            d="M15 14C13 5 20 2 27 3c1 8-3 13-12 11Z"
+            fill="var(--illustration-leaf-light)"
+          />
           <path
             d="m8 13 7 7m0-6 7-6"
-            stroke="#fff"
+            stroke="var(--surface)"
             strokeOpacity=".6"
             strokeWidth="1.1"
           />
@@ -104,41 +128,63 @@ function GrowthIllustration() {
       fill="none"
       aria-hidden="true"
     >
-      <ellipse cx="103" cy="166" rx="65" ry="11" fill="#cfdcbd" />
+      <ellipse
+        cx="103"
+        cy="166"
+        rx="65"
+        ry="11"
+        fill="var(--illustration-shadow)"
+      />
       <path
         d="M47 156V124h26v32M82 156V101h26v55M117 156V74h26v82"
-        fill="#a9bc90"
+        fill="var(--blue)"
         fillOpacity=".45"
-        stroke="#a4b88a"
+        stroke="var(--blue)"
         strokeWidth="1"
       />
       <path
         d="M31 113c34 3 67-18 107-68"
-        stroke="#8cA56c"
+        stroke="var(--sage-strong)"
         strokeWidth="1.5"
         strokeDasharray="3 5"
       />
       <path
         d="m124 47 17-7-2 18"
-        stroke="#8ca56c"
+        stroke="var(--sage-strong)"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
       <path
         d="M109 157v-51c0-13 9-19 18-23"
-        stroke="#6e8950"
+        stroke="var(--sage-strong)"
         strokeWidth="2"
         strokeLinecap="round"
       />
-      <path d="M109 133c-27 2-35-15-32-34 23-1 38 14 32 34Z" fill="#8EA66B" />
-      <path d="M109 114c-2-25 13-39 36-38 4 22-11 40-36 38Z" fill="#a3b889" />
-      <path d="m88 111 21 22m0-20 23-25" stroke="#dbe7cb" strokeWidth="1" />
-      <rect x="94" y="153" width="31" height="12" rx="3" fill="#d8b8a0" />
-      <path d="M97 164h25l-3 13h-19l-3-13Z" fill="#d3ad92" />
-      <circle cx="47" cy="70" r="15" fill="#fff9d6" stroke="#d7d9b8" />
+      <path
+        d="M109 133c-27 2-35-15-32-34 23-1 38 14 32 34Z"
+        fill="var(--sage)"
+      />
+      <path
+        d="M109 114c-2-25 13-39 36-38 4 22-11 40-36 38Z"
+        fill="var(--illustration-leaf-light)"
+      />
+      <path
+        d="m88 111 21 22m0-20 23-25"
+        stroke="var(--sage-soft)"
+        strokeWidth="1"
+      />
+      <rect x="94" y="153" width="31" height="12" rx="3" fill="var(--amber)" />
+      <path d="M97 164h25l-3 13h-19l-3-13Z" fill="var(--illustration-pot)" />
+      <circle
+        cx="47"
+        cy="70"
+        r="15"
+        fill="var(--cream)"
+        stroke="var(--amber)"
+      />
       <path
         d="M48 62v16m4-12h-6a3 3 0 0 0 0 6h3a3 3 0 0 1 0 6h-6"
-        stroke="#aaa96f"
+        stroke="var(--amber-strong)"
         strokeWidth="1.4"
         strokeLinecap="round"
       />
@@ -151,14 +197,16 @@ function Metric({
   value,
   note,
   icon: Icon,
+  theme = "profile",
 }: {
   label: string;
   value: string;
   note: string;
   icon: typeof Wallet;
+  theme?: SectionTheme;
 }) {
   return (
-    <div className="metric-card">
+    <div className={`metric-card theme-${theme}`}>
       <div className="metric-top">
         <span>{label}</span>
         <span className="metric-icon">
@@ -338,14 +386,16 @@ export default function App() {
     canvas.height = 720;
     const c = canvas.getContext("2d");
     if (!c) return;
-    c.fillStyle = "#FAFAF7";
+    const palette = getComputedStyle(document.documentElement);
+    const color = (token: string) => palette.getPropertyValue(token).trim();
+    c.fillStyle = color("--background");
     c.fillRect(0, 0, 1200, 720);
-    c.fillStyle = "#e5ecdb";
+    c.fillStyle = color("--sage-soft");
     c.fillRect(45, 45, 1110, 630);
-    c.fillStyle = "#6b8251";
+    c.fillStyle = color("--sage-strong");
     c.font = "bold 30px sans-serif";
     c.fillText("CukupDuit", 95, 110);
-    c.fillStyle = "#30352D";
+    c.fillStyle = color("--ink");
     c.font = "48px sans-serif";
     c.fillText("Your future, a little clearer.", 95, 200);
     c.font = "110px sans-serif";
@@ -372,7 +422,7 @@ export default function App() {
       95,
       515,
     );
-    c.fillStyle = "#74796F";
+    c.fillStyle = color("--muted");
     c.font = "17px sans-serif";
     c.fillText(
       "Illustrative projection. Outcomes are uncertain. Educational planning tool.",
@@ -398,7 +448,7 @@ export default function App() {
           {nav.map((n) => (
             <button
               key={n.id}
-              className={view === n.id ? "active" : ""}
+              className={`theme-${n.theme}${view === n.id ? " active" : ""}`}
               aria-current={view === n.id ? "page" : undefined}
               onClick={() => go(n.id)}
             >
@@ -584,7 +634,8 @@ export default function App() {
                     >
                       <h3>Your CukupDuit age</h3>
                       <div className="aside-age">
-                        {result?.retirementAge === undefined || result.retirementAge === null
+                        {result?.retirementAge === undefined ||
+                        result.retirementAge === null
                           ? "—"
                           : number(result.retirementAge)}
                         <span> years</span>
@@ -642,25 +693,27 @@ export default function App() {
             </motion.div>
           </AnimatePresence>
           <footer className="main-footer">
-            <span>
-              Made for your peace of mind. CukupDuit is an educational planning
-              tool.
-              <br />
-              Projections are based on assumptions and do not guarantee future
-              results.
-            </span>
-            <div className="footer-links">
-              <button onClick={() => setModal("assumptions")}>
-                Assumptions & privacy
-              </button>
-              <a
-                href="https://github.com/lumbanon/cukupduit"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open source{" "}
-                <ArrowUpRight size={10} style={{ display: "inline" }} />
-              </a>
+            <div className="footer-content">
+              <span>
+                Made for your peace of mind. CukupDuit is an educational
+                planning tool.
+                <br />
+                Projections are based on assumptions and do not guarantee future
+                results.
+              </span>
+              <div className="footer-links">
+                <button onClick={() => setModal("assumptions")}>
+                  Assumptions & privacy
+                </button>
+                <a
+                  href="https://github.com/lumbanon/cukupduit"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open source{" "}
+                  <ArrowUpRight size={10} style={{ display: "inline" }} />
+                </a>
+              </div>
             </div>
           </footer>
         </main>
@@ -923,6 +976,7 @@ function Overview({
               : "At retirement, using the full simulation"
           }
           icon={Target}
+          theme="legacy"
         />
         <Metric
           label="Projected accessible assets"
@@ -933,16 +987,18 @@ function Overview({
               : "Available when retirement begins"
           }
           icon={Wallet}
+          theme="assets"
         />
         <Metric
           label="Monthly retirement lifestyle"
           value={money(s.monthlyRetirementSpending / factor)}
           note="Including travel & healthcare budgets"
           icon={Heart}
+          theme="lifestyle"
         />
       </section>
       <div className="dashboard-grid">
-        <section className="panel">
+        <section className="panel theme-assets">
           <div className="panel-head">
             <div>
               <h2>Your wealth, over time</h2>
@@ -982,13 +1038,13 @@ function Overview({
             </button>
           </div>
         </section>
-        <section className="panel">
+        <section className="panel theme-assets">
           <div className="panel-head">
             <div>
               <h2>A little of everything</h2>
               <p>Your current asset mix.</p>
             </div>
-            <Wallet size={16} color="#9aa58b" />
+            <Wallet size={16} color="var(--blue-strong)" />
           </div>
           <AllocationChart profile={profile} />
         </section>
@@ -1026,8 +1082,8 @@ function Overview({
             </span>
           </div>
         </section>
-        <section className="panel progress-panel">
-          <h2>A legacy to look forward to.</h2>
+        <section className="panel progress-panel theme-legacy">
+          <h2 className="legacy-heading">A legacy to look forward to.</h2>
           <div className="progress-heading">
             <span>Inheritance at age {profile.legacy.distributionAge}</span>
             <span
@@ -1113,16 +1169,18 @@ function Scenarios({
       customScenario: { ...profile.customScenario, [key]: v },
     });
   return (
-    <div className="view-stack">
+    <div className="view-stack theme-lifestyle">
       <div className="scenario-cards">
         {scenarios.map((s) => (
           <section
-            className={`scenario-card ${s.id === "base" ? "base" : ""}`}
+            className={`scenario-card theme-${(scenarioAppearance[s.id] ?? scenarioAppearance.custom).theme} ${s.id === "base" ? "base" : ""}`}
             key={s.id}
           >
             <h3>{s.name}</h3>
             <div className="scenario-age">
-              {s.result.retirementAge === null ? "—" : number(s.result.retirementAge)}
+              {s.result.retirementAge === null
+                ? "—"
+                : number(s.result.retirementAge)}
               <span>
                 {s.result.retirementAge === null ? "not feasible" : "years old"}
               </span>
@@ -1161,7 +1219,7 @@ function Scenarios({
               points apply to annual rates.
             </p>
           </div>
-          <SlidersHorizontal size={19} color="#8EA66B" />
+          <SlidersHorizontal size={19} color="var(--lavender-strong)" />
         </div>
         <div className="form-grid">
           <Field
@@ -1263,7 +1321,7 @@ function Insights({
   );
   const top = [...profile.accounts].sort((a, b) => b.balance - a.balance)[0];
   return (
-    <div className="view-stack">
+    <div className="view-stack theme-legacy">
       <div className="optimizer-heading">
         <div className="hero-overline">
           <Sparkles />
@@ -1332,7 +1390,7 @@ function Insights({
         </div>
       </section>
       <div className="info-grid">
-        <section className="info-card">
+        <section className="info-card theme-lifestyle">
           <TrendingUp />
           <h3>Inflation changes what enough looks like.</h3>
           <p>
@@ -1343,7 +1401,7 @@ function Insights({
             {number(profile.inflation * 100)}% per year.
           </p>
         </section>
-        <section className="info-card">
+        <section className="info-card theme-assets">
           <LockKeyhole />
           <h3>Timing matters as much as total wealth.</h3>
           <p>
@@ -1355,7 +1413,7 @@ function Insights({
               : "Add an investment account to start your wealth projection."}
           </p>
         </section>
-        <section className="info-card">
+        <section className="info-card theme-family">
           <HeartHandshake />
           <h3>Room for the people you love.</h3>
           <p>
@@ -1378,7 +1436,7 @@ function Insights({
             )}
           </p>
         </section>
-        <section className="info-card">
+        <section className="info-card theme-legacy">
           <Target />
           <h3>
             {profile.targetRetirementAge
@@ -1426,7 +1484,7 @@ function Insights({
               Support, education, university funding and gifts, by your age.
             </p>
           </div>
-          <Heart size={18} color="#D8A2A2" />
+          <Heart size={18} color="var(--rose-strong)" />
         </div>
         <FamilyChart simulation={s} profile={profile} real={real} />
       </div>
@@ -1499,9 +1557,9 @@ function Assumptions() {
         Required capital is a simulation-derived accessible cash requirement
         with restricted assets and future property sales retained. It assumes
         pre-retirement obligations have been met and cannot erase earlier
-        shortfalls. Inheritance is distributed
-        at its configured date rather than ring-fenced at retirement. The
-        planning horizon is an assumption; living longer can change the result.
+        shortfalls. Inheritance is distributed at its configured date rather
+        than ring-fenced at retirement. The planning horizon is an assumption;
+        living longer can change the result.
       </p>
       <p>
         CukupDuit provides educational financial planning, not personalized

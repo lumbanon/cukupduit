@@ -15,6 +15,7 @@ Pushes to `main` validate the application and deploy it to GitHub Pages. See the
 ## Features
 
 - Guided personal profile, assets, retirement, family and legacy questionnaire, with Quick and Advanced modes.
+- Configure savings only in Assets & Savings: enter a fixed monthly amount or a percentage of take-home income, with a read-only calculated MYR summary for percentage savings.
 - Multiple investment accounts, configurable returns, fees, contribution growth, withdrawal ages and priorities.
 - EPF / KWSP restrictions and ASB / ASNB assumptions are editable; defaults are illustrative modelling assumptions.
 - Separate liquid, restricted and illiquid assets, liabilities and property cash flows.
@@ -62,6 +63,8 @@ Set `PLAYWRIGHT_BASE_URL` to test an existing deployment instead of starting the
 
 React 19, TypeScript, Vite, Tailwind CSS 4, shadcn/ui-compatible Radix components, Lucide, Recharts, Motion, Vitest, ESLint and Playwright. Dependencies are locked in `package-lock.json`.
 
+The shared seven-color palette and section themes live in `src/styles.css`. `src/data/visualTheme.ts` maps investment categories and scenario identities to those tokens; scenarios also use distinct line patterns. The footer keeps its disclaimer and links together in a centered, 1,000px container and stacks them on smaller screens.
+
 ```text
 src/
   components/   # Accessible forms, charts and UI components
@@ -92,6 +95,8 @@ realValue = nominalValue / (1 + annualInflation)^(monthsElapsed / 12)
 ```
 
 Savings are a total contribution budget, already net of ordinary working-life household expenses. The expenses input describes that budget and supports the expense-reduction optimizer; it is not deducted again from entered savings. Account allocations consume the savings budget; unallocated savings go to cash, preventing a second contribution of the same savings. Contributions cease at retirement. Annual savings and account contribution growth are applied geometrically over elapsed time to the corresponding inputs.
+
+`monthlySavingsBudget` derives the single active budget for the form, simulation, retirement search, scenarios and optimizer. Fixed mode uses the entered monthly amount; percentage mode uses take-home income multiplied by the saved fraction (`0.25` means 25%) and follows income growth. The calculated RM amount is never stored separately. Fixed and percentage inputs remain available when changing methods, but only the selected method contributes to the budget. Existing JSON plans remain compatible, and changing Quick/Advanced mode does not change either input or the selected method.
 
 Within each month, boundary events (property sales, retirement purchases, legacy and one-time child costs) are processed first. Pre-retirement contributions are invested at the start of the month, followed by investment returns and fees; ordinary spending withdrawals occur at month end. The effective monthly fee factor is `(1 - annualFee)^(1/12)`. Optional account tax applies to positive growth after fees each month, with no refund for losses. This is a simplified tax assumption, not a tax return calculation.
 

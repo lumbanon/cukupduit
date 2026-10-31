@@ -1,6 +1,7 @@
 import type { FinancialProfile, InvestmentAccount, ProjectionPoint, SimulationResult } from '../types';
 import { annualToMonthly, inflationFactor } from './inflation';
 import { validateProfile } from './validation';
+import { monthlySavingsBudget } from './savings';
 
 const EPS = 0.01;
 interface MutableAccount { config: InvestmentAccount; balance: number; mortgage: number; sold: boolean; monthlyRate: number; monthlyFeeFactor: number; mortgageRate: number }
@@ -167,8 +168,7 @@ export function runSimulation(p: FinancialProfile, retirementAge: number, option
     const extras = support + education + extraDebtPayments - propertyNet + pendingOneTime;
     let cashFlow = -lifestyle - extras;
     if (!retired) {
-      const savingsBudget = p.savingsMode === 'percentage' ? p.monthlyIncome * p.savingsPercent * factor(m, p.annualIncomeGrowth) : p.monthlySavings * factor(m, p.annualSavingsGrowth);
-      cashFlow += savingsBudget;
+      cashFlow += monthlySavingsBudget(p, m / 12);
     }
     if (cashFlow >= 0) {
       if (!retired) {

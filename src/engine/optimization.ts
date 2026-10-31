@@ -1,10 +1,11 @@
 import type { FinancialProfile, OptimizationResult } from '../types';
 import { findRetirement } from './retirementSearch';
 import { runSimulation } from './simulation';
+import { monthlySavingsBudget } from './savings';
 export { compareScenarios } from './scenarios';
 
 function increaseSavings(p: FinancialProfile, amount: number) {
-  p.monthlySavings = Math.min(1e12, (p.savingsMode === 'percentage' ? p.monthlyIncome * p.savingsPercent : p.monthlySavings) + amount);
+  p.monthlySavings = Math.min(1e12, monthlySavingsBudget(p) + amount);
   // An explicit additional fixed contribution uses the same total-budget model.
   if (p.savingsMode === 'percentage') p.annualSavingsGrowth = p.annualIncomeGrowth;
   p.savingsMode = 'fixed';
@@ -36,8 +37,8 @@ export function optimizeRetirement(profile: FinancialProfile): OptimizationResul
   return changes.map(change => {
     const p = structuredClone(profile); change.change(p); const result = findRetirement(p);
     const improves = result.retirementAge !== null && (baseline.retirementAge === null || result.retirementAge < baseline.retirementAge - 1e-8);
-    const originalSavings = profile.savingsMode === 'percentage' ? profile.monthlyIncome * profile.savingsPercent : profile.monthlySavings;
-    const changedSavings = p.savingsMode === 'percentage' ? p.monthlyIncome * p.savingsPercent : p.monthlySavings;
+    const originalSavings = monthlySavingsBudget(profile);
+    const changedSavings = monthlySavingsBudget(p);
     return { id: change.id, title: change.title, description: change.description, uncertain: change.uncertain, additionalMonthlySavings: Math.max(0, changedSavings - originalSavings), retirementAge: result.retirementAge, yearsSaved: baseline.retirementAge !== null && result.retirementAge !== null ? Math.max(0, baseline.retirementAge - result.retirementAge) : 0, improves, inheritanceMet: result.simulation.inheritanceMet, sustainable: result.simulation.feasible };
   });
 }

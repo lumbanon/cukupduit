@@ -27,6 +27,9 @@ try {
 
   await page.getByRole('button', { name: 'Calculate My Financial Freedom', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Your profile', exact: true })).toBeVisible()
+  await page.getByRole('spinbutton', { name: 'Your current age', exact: true }).fill('35')
+  await page.getByRole('spinbutton', { name: 'Your current age', exact: true }).blur()
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
   const monthlySavings = page.getByRole('spinbutton', { name: 'Monthly savings', exact: true })
   await monthlySavings.fill('10000')
   await monthlySavings.blur()
@@ -36,10 +39,6 @@ try {
   await expect(monthlySavings).toHaveValue('10000')
   passed('Editable savings and Quick/Advanced modes preserve the current plan')
 
-  await page.getByRole('spinbutton', { name: 'Your current age', exact: true }).fill('35')
-  await page.getByRole('spinbutton', { name: 'Your current age', exact: true }).blur()
-  await expect(page.getByRole('spinbutton', { name: 'Your current age', exact: true })).toHaveValue('35')
-  await page.getByRole('button', { name: 'Continue', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Assets & savings', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Advanced mode', exact: true }).click()
   const originalAccounts = await page.getByRole('textbox', { name: 'Account name', exact: true }).count()

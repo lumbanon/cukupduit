@@ -27,7 +27,11 @@ export interface ScenarioAssumptions { returnAdjustment: number; inflationAdjust
 export interface FinancialProfile {
   currentAge: number; currentYear: number; lifeExpectancy: number;
   monthlyIncome: number; annualIncomeGrowth: number; monthlyExpenses: number;
-  monthlySavings: number; savingsMode: 'fixed' | 'percentage'; savingsPercent: number;
+  /** User-entered fixed amount, inactive in percentage mode; not a derived total. */
+  monthlySavings: number;
+  savingsMode: 'fixed' | 'percentage';
+  /** User-entered fraction of income (0.25 = 25%), inactive in fixed mode. */
+  savingsPercent: number;
   annualSavingsGrowth: number; inflation: number; targetRetirementAge?: number;
   accounts: InvestmentAccount[]; liabilities: Liability[]; children: Child[];
   retirement: RetirementLifestyle; legacy: LegacyGoal; customScenario: ScenarioAssumptions;

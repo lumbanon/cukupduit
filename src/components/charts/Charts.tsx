@@ -22,18 +22,18 @@ import type {
   SimulationResult,
 } from "../../types";
 import { money, number } from "../../utils/format";
+import { assetColors, scenarioAppearance } from "../../data/visualTheme";
 
-const colors = ["#8EA66B", "#D8A2A2", "#d1b878", "#91aab0", "#b5b0c4"];
 const axis = {
   fontSize: "var(--text-chart)",
-  fill: "#65705b",
+  fill: "var(--muted)",
   fontFamily: "inherit",
 };
 const currencyTick = (v: number) => money(v, true).replace("MYR", "RM");
 const tip = {
   borderRadius: 12,
-  border: "1px solid #e8e9e1",
-  boxShadow: "0 8px 32px #30352d0d",
+  border: "1px solid var(--border)",
+  boxShadow: "0 8px 32px var(--shadow-color)",
   fontSize: "var(--text-chart)",
 };
 const tooltipValue = (v: unknown) => money(Number(v));
@@ -87,13 +87,13 @@ export function WealthChart({
         >
           <defs>
             <linearGradient id="wealthFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8EA66B" stopOpacity={0.28} />
-              <stop offset="100%" stopColor="#8EA66B" stopOpacity={0.015} />
+              <stop offset="0%" stopColor="var(--sage)" stopOpacity={0.22} />
+              <stop offset="100%" stopColor="var(--sage)" stopOpacity={0.015} />
             </linearGradient>
           </defs>
           <CartesianGrid
             strokeDasharray="3 5"
-            stroke="#edeee8"
+            stroke="var(--chart-grid)"
             vertical={false}
           />
           <XAxis
@@ -122,20 +122,20 @@ export function WealthChart({
           />
           <ReferenceLine
             x={simulation.retirementAge}
-            stroke="#a1857b"
+            stroke="var(--amber-strong)"
             strokeDasharray="4 4"
             label={{
               value: "Financial freedom",
               position: "insideTopRight",
               fontSize: "var(--text-chart)",
-              fill: "#937b71",
+              fill: "var(--amber-strong)",
             }}
           />
           {milestones.map((p) => (
             <ReferenceLine
               key={p.month}
               x={p.age}
-              stroke="#d1b878"
+              stroke="var(--amber-strong)"
               strokeDasharray="2 5"
             />
           ))}
@@ -144,7 +144,7 @@ export function WealthChart({
             type="monotone"
             dataKey="wealth"
             name="Net worth"
-            stroke="#8EA66B"
+            stroke="var(--sage-strong)"
             strokeWidth={2.8}
             fill="url(#wealthFill)"
           />
@@ -153,7 +153,7 @@ export function WealthChart({
             type="monotone"
             dataKey="accessible"
             name="Accessible investments"
-            stroke="#D8A2A2"
+            stroke="var(--blue-strong)"
             strokeWidth={1.7}
             strokeDasharray="4 4"
             fill="transparent"
@@ -165,7 +165,8 @@ export function WealthChart({
                 type="monotone"
                 dataKey="epf"
                 name="EPF"
-                stroke="#91aab0"
+                stroke="var(--sage-strong)"
+                strokeDasharray="2 3"
                 fill="transparent"
               />
               <Area
@@ -173,7 +174,8 @@ export function WealthChart({
                 type="monotone"
                 dataKey="asb"
                 name="ASB"
-                stroke="#d1b878"
+                stroke="var(--amber-strong)"
+                strokeDasharray="8 3"
                 fill="transparent"
               />
               <Area
@@ -181,7 +183,8 @@ export function WealthChart({
                 type="monotone"
                 dataKey="stocks"
                 name="Stocks & ETFs"
-                stroke="#b5b0c4"
+                stroke="var(--blue-strong)"
+                strokeDasharray="6 3 1 3"
                 fill="transparent"
               />
               <Area
@@ -189,7 +192,7 @@ export function WealthChart({
                 type="monotone"
                 dataKey="other"
                 name="Cash & other"
-                stroke="#b9bda7"
+                stroke="var(--rose-strong)"
                 fill="transparent"
               />
             </>
@@ -241,7 +244,10 @@ export function AllocationChart({ profile }: { profile: FinancialProfile }) {
               isAnimationActive={false}
             >
               {(total ? groups : [groups[0]]).map((g, i) => (
-                <Cell key={g.name} fill={total ? colors[i] : "#eee"} />
+                <Cell
+                  key={g.name}
+                  fill={total ? assetColors[i] : "var(--chart-empty)"}
+                />
               ))}
             </Pie>
             <Tooltip formatter={tooltipValue} contentStyle={tip} />
@@ -255,7 +261,10 @@ export function AllocationChart({ profile }: { profile: FinancialProfile }) {
       <div className="allocation-legend">
         {groups.map((g, i) => (
           <div key={g.name}>
-            <span className="legend-dot" style={{ background: colors[i] }} />
+            <span
+              className="legend-dot"
+              style={{ background: assetColors[i] }}
+            />
             <span>{g.name}</span>
             <strong>{total ? Math.round((g.value / total) * 100) : 0}%</strong>
           </div>
@@ -328,7 +337,7 @@ export function CashflowChart({
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ left: 5, right: 10, top: 10 }}>
-          <CartesianGrid vertical={false} stroke="#edeee8" />
+          <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis
             dataKey="age"
             tick={axis}
@@ -355,19 +364,22 @@ export function CashflowChart({
           <Bar
             dataKey="spending"
             name="Living expenses"
-            fill="#D8A2A2"
+            fill="var(--lavender)"
+            stroke="var(--lavender-strong)"
             radius={[3, 3, 0, 0]}
           />
           <Bar
             dataKey="growth"
             name="Investment returns"
-            fill="#8EA66B"
+            fill="var(--sage)"
+            stroke="var(--sage-strong)"
             radius={[3, 3, 0, 0]}
           />
           <Bar
             dataKey="withdrawals"
             name="Withdrawals"
-            fill="#d1b878"
+            fill="var(--blue)"
+            stroke="var(--blue-strong)"
             radius={[3, 3, 0, 0]}
           />
         </BarChart>
@@ -403,7 +415,7 @@ export function FamilyChart({
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
-          <CartesianGrid vertical={false} stroke="#edeee8" />
+          <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis dataKey="age" tick={axis} axisLine={false} tickLine={false} />
           <YAxis
             tickFormatter={currencyTick}
@@ -425,19 +437,22 @@ export function FamilyChart({
             dataKey="support"
             name="Child support"
             stackId="family"
-            fill="#8EA66B"
+            fill="var(--rose)"
+            stroke="var(--rose-strong)"
           />
           <Bar
             dataKey="education"
             name="Education"
             stackId="family"
-            fill="#d1b878"
+            fill="var(--lavender)"
+            stroke="var(--lavender-strong)"
           />
           <Bar
             dataKey="gifts"
             name="Gifts"
             stackId="family"
-            fill="#D8A2A2"
+            fill="var(--amber)"
+            stroke="var(--amber-strong)"
             radius={[3, 3, 0, 0]}
           />
         </BarChart>
@@ -483,7 +498,7 @@ export function ScenarioChart({
           <CartesianGrid
             vertical={false}
             strokeDasharray="3 5"
-            stroke="#edeee8"
+            stroke="var(--chart-grid)"
           />
           <XAxis dataKey="age" tick={axis} axisLine={false} tickLine={false} />
           <YAxis
@@ -499,15 +514,20 @@ export function ScenarioChart({
             contentStyle={tip}
           />
           <Legend
-            iconType="circle"
+            iconType="line"
             wrapperStyle={{ fontSize: "var(--text-chart)" }}
           />
-          {scenarios.map((s, i) => (
+          {scenarios.map((s) => (
             <Line
               key={s.id}
               dataKey={s.id}
               name={s.name}
-              stroke={colors[i]}
+              stroke={
+                (scenarioAppearance[s.id] ?? scenarioAppearance.custom).stroke
+              }
+              strokeDasharray={
+                (scenarioAppearance[s.id] ?? scenarioAppearance.custom).dash
+              }
               strokeWidth={2.5}
               dot={false}
               isAnimationActive={false}

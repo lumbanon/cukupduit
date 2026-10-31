@@ -1,6 +1,8 @@
 import { ArrowLeft, ArrowRight, BadgeCheck, Building2, CircleHelp, Gift, GraduationCap, Heart, House, Landmark, Plus, Sparkles, Trash2, UserRound, UsersRound, Wallet } from 'lucide-react'
 import type { AccountType, Child, FinancialProfile, InvestmentAccount, Liability } from '../../types'
 import { Field, SelectField, SliderField, TextField, ToggleField } from './Field'
+import { SavingsFields } from './SavingsFields'
+import { monthlySavingsBudget } from '../../engine/savings'
 
 export interface PlannerProps {
   profile: FinancialProfile
@@ -12,11 +14,11 @@ export interface PlannerProps {
 }
 
 const steps = [
-  { title: 'Your profile', short: 'Profile', icon: UserRound, description: 'A little about where you are today.' },
-  { title: 'Assets & savings', short: 'Assets', icon: Wallet, description: 'Give your money a starting point.' },
-  { title: 'Your retirement lifestyle', short: 'Lifestyle', icon: House, description: 'Make room for the life you want to live.' },
-  { title: 'Family & children', short: 'Family', icon: UsersRound, description: 'Plan for the people who matter most.' },
-  { title: 'Inheritance & legacy', short: 'Legacy', icon: Gift, description: 'Choose what you would like to leave behind.' },
+  { title: 'Your profile', short: 'Profile', theme: 'profile', icon: UserRound, description: 'A little about where you are today.' },
+  { title: 'Assets & savings', short: 'Assets', theme: 'assets', icon: Wallet, description: 'Give your money a starting point.' },
+  { title: 'Your retirement lifestyle', short: 'Lifestyle', theme: 'lifestyle', icon: House, description: 'Make room for the life you want to live.' },
+  { title: 'Family & children', short: 'Family', theme: 'family', icon: UsersRound, description: 'Plan for the people who matter most.' },
+  { title: 'Inheritance & legacy', short: 'Legacy', theme: 'legacy', icon: Gift, description: 'Choose what you would like to leave behind.' },
 ]
 
 const accountTypes: { value: AccountType; label: string }[] = [
@@ -46,7 +48,7 @@ export function Planner({ profile, onChange, mode, step, onStepChange, onResults
   const investmentAccounts = profile.accounts.filter(account => account.type !== 'property')
   const investmentBalance = investmentAccounts.reduce((sum, account) => sum + account.balance, 0)
   const weightedReturn = investmentBalance > 0 ? investmentAccounts.reduce((sum, account) => sum + account.balance * account.annualReturn, 0) / investmentBalance : investmentAccounts[0]?.annualReturn ?? 0.05
-  const savings = profile.savingsMode === 'fixed' ? profile.monthlySavings : profile.monthlyIncome * profile.savingsPercent
+  const savings = monthlySavingsBudget(profile)
   const allocated = investmentAccounts.reduce((sum, account) => sum + account.monthlyContribution, 0)
   const updateTimeline = (currentAge: number, lifeExpectancy: number) => {
     const withinPlan = (age: number) => Math.max(currentAge, Math.min(lifeExpectancy, age))
@@ -68,9 +70,9 @@ export function Planner({ profile, onChange, mode, step, onStepChange, onResults
     else set({ accounts: profile.accounts.map(account => account.type === 'property' ? account : { ...account, annualReturn: Math.max(-0.9999, Math.min(1, account.annualReturn + rate - weightedReturn)) }) })
   }
 
-  return <section className="planner-content" aria-labelledby="planner-title">
+  return <section className={`planner-content theme-${active.theme}`} aria-labelledby="planner-title">
     <nav className="planner-steps" aria-label="Planning steps"><ol className="stepper">
-      {steps.map((item, index) => <li key={item.short}><button type="button" className={`planner-step${index === activeStep ? ' active' : ''}${index < activeStep ? ' complete' : ''}`} aria-label={`Step ${index + 1}: ${item.short}${index < activeStep ? ', completed' : ''}`} aria-current={index === activeStep ? 'step' : undefined} onClick={() => onStepChange(index)}>
+      {steps.map((item, index) => <li key={item.short}><button type="button" className={`planner-step theme-${item.theme}${index === activeStep ? ' active' : ''}${index < activeStep ? ' complete' : ''}`} aria-label={`Step ${index + 1}: ${item.short}${index < activeStep ? ', completed' : ''}`} aria-current={index === activeStep ? 'step' : undefined} onClick={() => onStepChange(index)}>
         <span className="step-number" aria-hidden="true">{index < activeStep ? <BadgeCheck size={16} /> : index + 1}</span><span className="step-label"><item.icon className="step-icon" size={20} aria-hidden="true" /><span>{item.short}</span></span>
       </button></li>)}
     </ol></nav>
@@ -80,15 +82,10 @@ export function Planner({ profile, onChange, mode, step, onStepChange, onResults
       <div className="form-grid">
         <Field label="Your current age" value={profile.currentAge} onChange={currentAge => updateTimeline(currentAge, Math.max(currentAge + 1, profile.lifeExpectancy))} min={18} max={100} suffix="years" />
         <Field label="Plan until age" value={profile.lifeExpectancy} onChange={lifeExpectancy => updateTimeline(profile.currentAge, lifeExpectancy)} min={profile.currentAge + 1} max={120} suffix="years" hint="Your planning horizon, rather than a prediction. Scheduled events are kept within this horizon." />
-        <SelectField label="How do you save?" value={profile.savingsMode} onChange={value => set({ savingsMode: value as FinancialProfile['savingsMode'] })}>
-          <option value="fixed">A fixed monthly amount</option><option value="percentage">A percentage of income</option>
-        </SelectField>
-        {profile.savingsMode === 'fixed' ? <Field label="Monthly savings" value={profile.monthlySavings} onChange={monthlySavings => set({ monthlySavings })} prefix="RM" step={100} max={10000000} hint="Total monthly investment budget, including account contributions." /> : <Field label="Income saved each month" value={profile.savingsPercent * 100} onChange={value => set({ savingsPercent: value / 100 })} max={100} step={1} suffix="%" />}
-        {(advanced || profile.savingsMode === 'percentage') && <Field label="Monthly take-home income" value={profile.monthlyIncome} onChange={monthlyIncome => set({ monthlyIncome })} prefix="RM" step={100} max={10000000} />}
+        <Field label="Monthly take-home income" value={profile.monthlyIncome} onChange={monthlyIncome => set({ monthlyIncome })} prefix="RM" step={100} max={10000000} />
         {advanced && <>
           <Field label="Current monthly household expenses" value={profile.monthlyExpenses} onChange={monthlyExpenses => set({ monthlyExpenses })} prefix="RM" step={100} max={10000000} hint="Used for budget insights; savings are your amount after these expenses." />
           <Field label="Annual income growth" value={profile.annualIncomeGrowth * 100} onChange={value => set({ annualIncomeGrowth: value / 100 })} min={-50} max={50} step={0.1} suffix="%" />
-          <Field label="Annual savings growth" value={profile.annualSavingsGrowth * 100} onChange={value => set({ annualSavingsGrowth: value / 100 })} min={-50} max={50} step={0.1} suffix="%" hint="Growth of your overall savings budget. Account allocations have their own growth settings." />
         </>}
         <Field label="Expected annual inflation" value={profile.inflation * 100} onChange={value => set({ inflation: value / 100 })} min={-5} max={30} step={0.1} suffix="%" hint="An assumption you can change, not a forecast." />
         <SliderField label="Inflation assumption" value={profile.inflation * 100} onChange={value => set({ inflation: value / 100 })} min={Math.min(0, Math.floor(profile.inflation * 100))} max={Math.max(10, Math.ceil(profile.inflation * 100))} step={0.1} suffix="%" />
@@ -100,8 +97,10 @@ export function Planner({ profile, onChange, mode, step, onStepChange, onResults
     </div>}
 
     {activeStep === 1 && <div className="form-section">
+      <SavingsFields profile={profile} onChange={onChange} advanced={advanced} />
+      <div className="form-divider" />
       {!advanced && <>
-        <div className="form-grid"><Field label="Current investable savings" value={Math.round(investmentBalance)} onChange={setTotalBalance} prefix="RM" step={1000} max={1000000000} hint="Cash and investments, excluding property. Editing this total preserves your account mix." /><Field label="Expected annual investment return" value={Number((weightedReturn * 100).toFixed(2))} onChange={value => setReturn(value / 100)} min={-99.99} max={100} step={0.1} suffix="%" hint="Gross balance-weighted return; account fees and taxes are deducted separately." /><SliderField label="Investment return assumption" value={weightedReturn * 100} onChange={value => setReturn(value / 100)} min={Math.min(0, Math.floor(weightedReturn * 100))} max={Math.max(12, Math.ceil(weightedReturn * 100))} step={0.1} suffix="%" /><Field label="Monthly savings" value={savings} onChange={monthlySavings => set({ monthlySavings, savingsMode: 'fixed' })} prefix="RM" step={100} max={10000000} /></div>
+        <div className="form-grid"><Field label="Current investable savings" value={Math.round(investmentBalance)} onChange={setTotalBalance} prefix="RM" step={1000} max={1000000000} hint="Cash and investments, excluding property. Editing this total preserves your account mix." /><Field label="Expected annual investment return" value={Number((weightedReturn * 100).toFixed(2))} onChange={value => setReturn(value / 100)} min={-99.99} max={100} step={0.1} suffix="%" hint="Gross balance-weighted return; account fees and taxes are deducted separately." /><SliderField label="Investment return assumption" value={weightedReturn * 100} onChange={value => setReturn(value / 100)} min={Math.min(0, Math.floor(weightedReturn * 100))} max={Math.max(12, Math.ceil(weightedReturn * 100))} step={0.1} suffix="%" /></div>
         <div className="form-note"><Landmark size={18} /><span>Your {profile.accounts.length} account{profile.accounts.length === 1 ? '' : 's'}, fees, and withdrawal restrictions stay in your plan. Use Advanced mode to edit each account.</span></div>
       </>}
       {advanced && <>
