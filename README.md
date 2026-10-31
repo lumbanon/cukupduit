@@ -1,6 +1,8 @@
 # CukupDuit
 
 **Know when you've got enough.**
+<img width="2553" height="1355" alt="image" src="https://github.com/user-attachments/assets/3249ed49-0512-472d-bdc1-e750ba371872" />
+
 
 A financial freedom and retirement simulator built for Malaysian Ringgit. Explore how savings, investment accounts, inflation, retirement spending, children and inheritance change the earliest retirement age your plan can support.
 
